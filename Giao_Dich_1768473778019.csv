@@ -1,0 +1,34 @@
+﻿Ngày;Loại;Số tiền;Tiền tệ;Hạng mục;Nguồn tiền;Mô tả;Trạng thái;Người tạo
+2026-01-15T10:16:02.232Z;OUT;10;USD;Chuyển tiền nội bộ;;Chuyển đến YASU TM:  | Tỷ giá: 1 USD = 26201.5800 VND (Ref: TRF-162232);APPROVED;System
+2026-01-15T10:16:02.232Z;IN;262015.80000000002;VND;Nhận tiền nội bộ;Chuyển khoản nội bộ;Nhận từ ABA 662 $:  | Tỷ giá: 1 USD = 26201.5800 VND (Ref: TRF-162232);APPROVED;System
+2026-01-15T10:11:58.885Z;IN;12000000;KHR;shoppe;shoppe;;APPROVED;Quản trị viên
+2026-01-15T05:01:27.394Z;OUT;200;USD;maketing;;;PENDING;Quản trị viên
+2026-01-15T05:01:11.161Z;OUT;30;USD;maketing;;;APPROVED;Quản trị viên
+2026-01-13T08:45:16.286Z;IN;3600000;KHR;jkjiok;jkjiok;;APPROVED;Quản trị viên
+2026-01-10T13:46:45.839Z;IN;300000000;VND;Số dư đầu kỳ;;Khởi tạo tài khoản;APPROVED;System
+2026-01-10T13:44:52.318Z;IN;50000000;KHR;Số dư đầu kỳ;;Khởi tạo tài khoản;APPROVED;System
+2026-01-10T13:44:01.504Z;IN;10000;USD;Số dư đầu kỳ;;Khởi tạo tài khoản;APPROVED;System
+2025-12-13T12:01:35.217Z;OUT;100;KHR;Cước vận chuyển HCM-HN;;;APPROVED;Quản trị viên
+2025-12-13T12:00:41.721Z;OUT;10000;KHR;Thuế;;;APPROVED;Quản trị viên
+2025-12-13T11:59:23.529Z;OUT;100;KHR;Cước vận chuyển HN-HCM;;;APPROVED;Quản trị viên
+2025-12-11T10:13:27.108Z;OUT;50;USD;SIM MetPhone;;;APPROVED;Tran Oanh Oanh
+2025-12-11T10:12:06.829Z;IN;200;USD;COD VET;COD VET;;APPROVED;Tran Oanh Oanh
+2025-12-11T10:10:37.188Z;IN;10000;USD;Số dư đầu kỳ;;Khởi tạo tài khoản;APPROVED;System
+2025-12-11T00:58:40.154Z;OUT;100;USD;SIM;;;APPROVED;Quản trị viên
+2025-12-07T16:39:29.038Z;OUT;300;USD;Long Heng;;;APPROVED;Unknown
+2025-12-07T16:33:11.057Z;IN;1000;USD;Nhận tiền nội bộ;Chuyển khoản nội bộ;Nhận tiền từ ABA YASU $:  (Ref: TRF-191057);APPROVED;System
+2025-12-07T16:16:32.253Z;IN;45;USD;Thuế;Khách CK;;APPROVED;Unknown
+2025-12-07T16:05:56.311Z;OUT;2750;USD;Thuê văn phòng;;Chi phí cố định: Thuê văn phòng (MONTHLY);APPROVED;System
+2025-12-07T16:05:56.121Z;OUT;300;USD;Long heng;;Chi phí cố định: Long heng (MONTHLY);APPROVED;System
+2025-12-07T16:05:55.937Z;OUT;170;USD;Dịch vụ kế toán thuế ;;Chi phí cố định: Dịch vụ kế toán thuế  (MONTHLY);APPROVED;System
+2025-12-07T16:05:55.548Z;OUT;60000;USD;Lương cơ bản Cambodia;;Chi phí cố định: Lương cơ bản Cambodia (MONTHLY);APPROVED;System
+2025-12-06T16:33:30.045Z;OUT;5000;USD;Lương;;;APPROVED;Quản trị viên
+2025-12-06T16:31:41.521Z;IN;26;USD;Khách CK;Khách CK;;APPROVED;Quản trị viên
+2025-12-06T16:25:24.943Z;IN;23;USD;Khách CK;Khách CK;;APPROVED;Quản trị viên
+2025-12-06T16:14:12.468Z;IN;12;USD;Khách CK;Khách CK;dfsdf;APPROVED;Quản trị viên
+2025-12-06T16:05:50.967Z;IN;1000000;VND;COD VET;COD VET;dsdá;APPROVED;Quản trị viên
+2025-12-06T13:37:09.583Z;OUT;200000;USD;Tiền mặt bằng;;Chi phí cố định: Tiền mặt bằng (MONTHLY);REJECTED;System
+2025-12-06T13:35:39.822Z;OUT;300;USD;Thuế;;sđá;APPROVED;Quản trị viên
+2025-12-06T13:34:56.021Z;IN;300;USD;COD VET;COD VET;gggg;APPROVED;Quản trị viên
+2025-12-06T07:49:35.761Z;OUT;200000;VND;Ads;;ứadá;APPROVED;Quản trị viên
+2025-12-06T05:47:44.546Z;IN;1200000;VND;Số dư đầu kỳ;;Khởi tạo tài khoản;APPROVED;System
