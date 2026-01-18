@@ -385,6 +385,165 @@ export const AttendanceHistory: React.FC = () => {
     XLSX.writeFile(wb, `DiemDanh_${selectedRecord.className}_${selectedRecord.date.replace(/\//g, '-')}.xlsx`);
   };
 
+  // Export monthly attendance calendar (with days 1-31 as columns)
+  const exportMonthlyCalendar = async () => {
+    if (!filterClass) {
+      alert('Vui lòng chọn lớp học để xuất báo cáo tháng');
+      return;
+    }
+
+    if (!filterFromDate || !filterToDate) {
+      alert('Vui lòng chọn khoảng thời gian để xuất báo cáo');
+      return;
+    }
+
+    try {
+      // Get all attendance records for this class in date range
+      const classRecords = attendanceRecords.filter(r => 
+        r.classId === filterClass || r.className === filterClass
+      );
+
+      if (classRecords.length === 0) {
+        alert('Không có dữ liệu điểm danh trong khoảng thời gian này');
+        return;
+      }
+
+      // Get all students in this class
+      const classInfo = allClasses.find(c => c.id === filterClass || c.name === filterClass);
+      const classStudents = allStudents.filter(s => 
+        s.classId === filterClass || 
+        s.classIds?.includes(filterClass) ||
+        s.class === classInfo?.name
+      );
+
+      if (classStudents.length === 0) {
+        alert('Không tìm thấy học viên trong lớp này');
+        return;
+      }
+
+      // Load all student attendance for these records
+      const allStudentAttendance: Record<string, StudentAttendance[]> = {};
+      for (const record of classRecords) {
+        const q = query(
+          collection(db, 'studentAttendance'),
+          where('attendanceId', '==', record.id)
+        );
+        const snapshot = await getDocs(q);
+        allStudentAttendance[record.id] = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as StudentAttendance));
+      }
+
+      // Build calendar data
+      const fromDate = new Date(filterFromDate);
+      const toDate = new Date(filterToDate);
+      const month = fromDate.getMonth() + 1;
+      const year = fromDate.getFullYear();
+
+      // Get days in month
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      // Create header row
+      const headers = [
+        'STT',
+        'Tên',
+        ...Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()),
+        'Tổng số buổi học',
+        'Trạng thái',
+        'Điểm',
+        'Nội dung học',
+        'Lịch học'
+      ];
+
+      // Create data rows
+      const data = classStudents.map((student, index) => {
+        const row: any = {
+          'STT': index + 1,
+          'Tên': student.fullName,
+        };
+
+        // Fill attendance for each day
+        let totalSessions = 0;
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+          
+          // Find attendance record for this date
+          const record = classRecords.find(r => {
+            const recordDate = r.date?.includes('/') 
+              ? r.date.split('/').reverse().join('-')
+              : r.date;
+            return recordDate === dateStr;
+          });
+
+          if (record) {
+            const studentAtt = allStudentAttendance[record.id]?.find(sa => 
+              sa.studentId === student.id
+            );
+
+            if (studentAtt) {
+              // X = có mặt, x = trễ, V = vắng, B = bảo lưu, Đ = đã bồi
+              let mark = '';
+              if (studentAtt.status === 'Đúng giờ') {
+                mark = 'X';
+                totalSessions++;
+              } else if (studentAtt.status === 'Trễ giờ') {
+                mark = 'x';
+                totalSessions++;
+              } else if (studentAtt.status === 'Vắng') {
+                mark = 'V';
+              } else if (studentAtt.status === 'Bảo lưu') {
+                mark = 'B';
+              } else if (studentAtt.status === 'Đã bồi') {
+                mark = 'Đ';
+              }
+              row[day.toString()] = mark;
+            } else {
+              row[day.toString()] = '';
+            }
+          } else {
+            row[day.toString()] = '';
+          }
+        }
+
+        row['Tổng số buổi học'] = totalSessions;
+        row['Trạng thái'] = student.status;
+        row['Điểm'] = '';
+        row['Nội dung học'] = '';
+        row['Lịch học'] = classInfo?.schedule || '';
+
+        return row;
+      });
+
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(data, { header: headers });
+
+      // Set column widths
+      const colWidths = [
+        { wch: 5 },  // STT
+        { wch: 25 }, // Tên
+        ...Array.from({ length: daysInMonth }, () => ({ wch: 3 })), // Days
+        { wch: 15 }, // Tổng số buổi học
+        { wch: 12 }, // Trạng thái
+        { wch: 8 },  // Điểm
+        { wch: 20 }, // Nội dung học
+        { wch: 20 }, // Lịch học
+      ];
+      ws['!cols'] = colWidths;
+
+      // Create workbook and export
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, `Tháng ${month}`);
+      
+      const className = classInfo?.name || filterClass;
+      XLSX.writeFile(wb, `DiemDanh_${className}_Thang${month}_${year}.xlsx`);
+
+    } catch (error) {
+      console.error('Error exporting monthly calendar:', error);
+      alert('Có lỗi khi xuất báo cáo. Vui lòng thử lại.');
+    }
+  };
+
   // Load detail when viewing
   const handleViewDetail = async (record: AttendanceRecord) => {
     setSelectedRecord(record);
@@ -705,6 +864,15 @@ export const AttendanceHistory: React.FC = () => {
            <h2 className="text-lg font-bold text-gray-800">Lịch sử điểm danh</h2>
            <p className="text-sm text-gray-500">Xem lịch sử điểm danh các lớp học</p>
          </div>
+         <button
+           onClick={exportMonthlyCalendar}
+           disabled={!filterClass || !filterFromDate || !filterToDate}
+           className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+           title={!filterClass || !filterFromDate || !filterToDate ? 'Chọn lớp và khoảng thời gian để xuất báo cáo' : 'Xuất báo cáo điểm danh theo tháng'}
+         >
+           <FileDown size={18} />
+           Xuất báo cáo tháng
+         </button>
        </div>
 
        {/* Status Summary Bar - 4 attendance statuses (matching AttendanceStatus enum) */}
