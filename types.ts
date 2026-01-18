@@ -266,6 +266,7 @@ export interface Staff {
   position: string;
   phone: string;
   email?: string;
+  password?: string; // Mật khẩu đăng nhập (không hash - tạm thời cho demo)
   status: 'Active' | 'Inactive';
   dob?: string;
   startDate?: string;

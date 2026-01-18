@@ -6,11 +6,10 @@
 import React, { useState } from 'react';
 import { Key, Eye, EyeOff, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../src/hooks/useAuth';
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
-import { auth } from '../src/config/firebase';
+import { StaffService } from '../src/services/staffService';
 
 export const ChangePassword: React.FC = () => {
-  const { user } = useAuth();
+  const { user, staffData } = useAuth();
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -28,10 +27,7 @@ export const ChangePassword: React.FC = () => {
 
   const validatePassword = (password: string) => {
     const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
+      length: password.length >= 6, // Simplified for demo
     };
     return checks;
   };
@@ -43,13 +39,13 @@ export const ChangePassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user || !user.email) {
+    if (!user || !staffData) {
       setMessage({ type: 'error', text: 'Không tìm thấy thông tin người dùng.' });
       return;
     }
 
     if (!isPasswordValid) {
-      setMessage({ type: 'error', text: 'Mật khẩu mới không đáp ứng yêu cầu bảo mật.' });
+      setMessage({ type: 'error', text: 'Mật khẩu mới phải có ít nhất 6 ký tự.' });
       return;
     }
 
@@ -62,27 +58,24 @@ export const ChangePassword: React.FC = () => {
     setMessage(null);
 
     try {
-      // Re-authenticate user with current password
-      const credential = EmailAuthProvider.credential(user.email, formData.currentPassword);
-      await reauthenticateWithCredential(user, credential);
+      // Check current password
+      const currentPassword = (staffData as any).password;
+      if (currentPassword !== formData.currentPassword) {
+        setMessage({ type: 'error', text: 'Mật khẩu hiện tại không đúng.' });
+        setSaving(false);
+        return;
+      }
 
-      // Update password
-      await updatePassword(user, formData.newPassword);
+      // Update password in Firestore
+      await StaffService.updateStaff(user.uid, {
+        password: formData.newPassword
+      });
 
       setMessage({ type: 'success', text: 'Đổi mật khẩu thành công!' });
       setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error: any) {
       console.error('Error changing password:', error);
-
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        setMessage({ type: 'error', text: 'Mật khẩu hiện tại không đúng.' });
-      } else if (error.code === 'auth/weak-password') {
-        setMessage({ type: 'error', text: 'Mật khẩu mới quá yếu. Vui lòng chọn mật khẩu mạnh hơn.' });
-      } else if (error.code === 'auth/requires-recent-login') {
-        setMessage({ type: 'error', text: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.' });
-      } else {
-        setMessage({ type: 'error', text: 'Có lỗi xảy ra. Vui lòng thử lại sau.' });
-      }
+      setMessage({ type: 'error', text: 'Có lỗi xảy ra. Vui lòng thử lại sau.' });
     } finally {
       setSaving(false);
     }
@@ -175,19 +168,7 @@ export const ChangePassword: React.FC = () => {
                 <p className="text-xs font-medium text-gray-600 mb-2">Yêu cầu mật khẩu:</p>
                 <div className={`text-xs flex items-center gap-1 ${passwordChecks.length ? 'text-green-600' : 'text-gray-400'}`}>
                   {passwordChecks.length ? <CheckCircle className="w-3 h-3" /> : <div className="w-3 h-3 rounded-full border border-current" />}
-                  Ít nhất 8 ký tự
-                </div>
-                <div className={`text-xs flex items-center gap-1 ${passwordChecks.uppercase ? 'text-green-600' : 'text-gray-400'}`}>
-                  {passwordChecks.uppercase ? <CheckCircle className="w-3 h-3" /> : <div className="w-3 h-3 rounded-full border border-current" />}
-                  Có chữ hoa (A-Z)
-                </div>
-                <div className={`text-xs flex items-center gap-1 ${passwordChecks.lowercase ? 'text-green-600' : 'text-gray-400'}`}>
-                  {passwordChecks.lowercase ? <CheckCircle className="w-3 h-3" /> : <div className="w-3 h-3 rounded-full border border-current" />}
-                  Có chữ thường (a-z)
-                </div>
-                <div className={`text-xs flex items-center gap-1 ${passwordChecks.number ? 'text-green-600' : 'text-gray-400'}`}>
-                  {passwordChecks.number ? <CheckCircle className="w-3 h-3" /> : <div className="w-3 h-3 rounded-full border border-current" />}
-                  Có số (0-9)
+                  Ít nhất 6 ký tự
                 </div>
               </div>
             )}
@@ -222,6 +203,13 @@ export const ChangePassword: React.FC = () => {
             {formData.confirmPassword && !doPasswordsMatch && (
               <p className="text-xs text-red-500 mt-1">Mật khẩu xác nhận không khớp</p>
             )}
+          </div>
+
+          {/* Demo Warning */}
+          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-xs text-yellow-800">
+              <strong>Lưu ý:</strong> Mật khẩu được lưu dạng văn bản (không mã hóa) - chỉ dùng cho demo.
+            </p>
           </div>
 
           {/* Submit Button */}

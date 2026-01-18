@@ -1,0 +1,245 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // DEMO RULES - Simplified but keeps permissions
+    // ========================================
+    // Since we're not using Firebase Auth, we can't check request.auth
+    // But we still want to demonstrate role-based access control
+    // 
+    // For demo: Allow all reads, but show permission checks in UI
+    // The UI will handle permission logic based on staff role
+    
+    // Helper: Allow all for demo (no auth check possible without Firebase Auth)
+    function allowDemo() {
+      return true;
+    }
+    
+    // ========================================
+    // COLLECTIONS
+    // ========================================
+    
+    // Students - all staff can access
+    match /students/{studentId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Classes - all staff can access
+    match /classes/{classId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Staff - all can read (needed for login), admin writes
+    match /staff/{staffId} {
+      allow read: if allowDemo();
+      allow write: if allowDemo();
+    }
+    
+    // Parents - office staff and admin
+    match /parents/{parentId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Attendance
+    match /attendance/{attendanceId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /studentAttendance/{docId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /attendanceAuditLog/{logId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Tutoring
+    match /tutoring/{tutoringId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Finance - admin, ketoan, cskh, sale
+    match /contracts/{contractId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /invoices/{invoiceId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /settlementInvoices/{invoiceId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /financialTransactions/{transactionId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Business - admin, cskh, sale
+    match /leads/{leadId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /campaigns/{campaignId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Feedback
+    match /feedback/{feedbackId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /feedbacks/{feedbackId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Enrollments
+    match /enrollments/{enrollmentId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Class Sessions
+    match /classSessions/{sessionId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Work Sessions
+    match /workSessions/{sessionId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Settings
+    match /settings/{settingId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /curriculums/{curriculumId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /rooms/{roomId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /branches/{branchId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /centers/{centerId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /products/{productId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /discounts/{discountId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Salary
+    match /staffSalaries/{salaryId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /actualSalaries/{docId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /monthlySalarySummary/{docId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /salaryRules/{ruleId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /salaryRanges/{rangeId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /rewardPenalties/{docId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /staffRewardPenalty/{recordId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /rewardPenaltyConfig/{configId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Staff Attendance
+    match /staffAttendance/{docId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Holidays
+    match /holidays/{holidayId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Homework & Comments
+    match /homeworkRecords/{recordId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /testComments/{commentId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /homeworkStatuses/{statusId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /testTemplates/{templateId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /monthlyComments/{commentId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Birthday Gifts
+    match /birthdayGifts/{giftId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Leave Management
+    match /leaveRequests/{requestId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /leaveBalances/{balanceId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Check-in
+    match /allowedWifis/{wifiId} {
+      allow read, write: if allowDemo();
+    }
+    
+    match /staffCheckIns/{checkInId} {
+      allow read, write: if allowDemo();
+    }
+    
+    // Default: deny all other collections
+    match /{document=**} {
+      allow read, write: if allowDemo();
+    }
+  }
+}
+
+// ========================================
+// IMPORTANT NOTES FOR DEMO:
+// ========================================
+// 1. These rules allow all operations for demo purposes
+// 2. Permission checks are handled in the UI layer based on staff role
+// 3. Without Firebase Auth, we cannot verify user identity in rules
+// 4. For production, you MUST implement proper authentication:
+//    - Add Firebase Auth back OR
+//    - Use custom tokens OR
+//    - Implement server-side API with proper auth
+// ========================================

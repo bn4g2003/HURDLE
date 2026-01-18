@@ -7,6 +7,9 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { StudentStatus } from './types';
 import { useAuth } from './src/hooks/useAuth';
 
+// Import admin helper for console access
+import './src/utils/createAdminHelper';
+
 // Lazy load page components for code splitting
 const DashboardRouter = lazy(() => import('./pages/DashboardRouter').then(m => ({ default: m.DashboardRouter })));
 const ClassManager = lazy(() => import('./pages/ClassManager').then(m => ({ default: m.ClassManager })));

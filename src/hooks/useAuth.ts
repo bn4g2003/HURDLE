@@ -18,12 +18,15 @@ export const useAuth = () => {
   const signIn = async (email: string, password: string) => {
     try {
       setError(null);
+      setLoading(true);
       const user = await AuthService.signIn(email, password);
       setUser(user);
       return user;
     } catch (err: any) {
       setError(err.message);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,6 +72,6 @@ export const useAuth = () => {
     signOut,
     register,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'Quản trị viên' || user?.role === 'Quản lý'
+    isAdmin: user?.staffData?.role === 'Quản trị viên' || user?.staffData?.role === 'Quản lý'
   };
 };
